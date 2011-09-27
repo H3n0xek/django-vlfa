@@ -2,6 +2,7 @@ from vlfa_moderation.models import ModeratorProfile
 from vlfa_base.models import Category, Thread, Post
 from vlfa_base.views.categories import BrowseCategory, ViewTopic, ViewPost
 
+from django import forms
 from django.shortcuts import get_object_or_404, redirect
 from django.http import Http404, HttpResponse
 
@@ -86,7 +87,30 @@ class ModerateTopic(ViewTopic):
         return HttpResponse(status=400)                
                                         
 
-                                     
-        
+class ModeratePostForm(forms.ModelForm):
+    class Meta:
+        fields = ('text_source', )
     
+
+class ModeratePost(UpdateView):
+    template_name = 'vlfa/moderate_post.html'
+    template_object_name = 'post'
+    form_class = ModeratePostForm
+
+    def get_object(self):
+        post_id = self.kwargs.get('post_id', None) 
+        post = get_object_or_404(Post.objects, pk=post_id)
+        profile = get_object_or_404(ModeratorProfile.objects,
+                                    user=self.request.user)
+        self.category = post.thread.category
+        self.thread = post.thread
+        if self.category not in profile.categories:
+            raise Http404
+        
+        return post
+
+    def get_success_url(self):
+        return reverse('view-topic',
+                       kwargs={ 'category_name': self.category.name,
+                                'topic_id': self.thread.pk })
     
