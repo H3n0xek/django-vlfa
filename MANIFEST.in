@@ -1,0 +1,6 @@
+include MANIFEST.in
+include AUTHORS
+include LICENSE
+include README
+recursive-install vlfa_base/locale *.po *.mo
+recursive-install vlfa_moderation/locale 
