@@ -6,7 +6,7 @@
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from vlfa.managers import *
+from vlfa_base.managers import *
 from datetime import datetime
 from django.conf import settings as project_settings
 from django.contrib.sites.models import Site
